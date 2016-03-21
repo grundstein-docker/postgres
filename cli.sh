@@ -38,6 +38,10 @@ function run() {
     --volume $PWD/data:/home/data/postgresql \
     --publish $HOST_PORT:$CONTAINER_PORT \
     $CONTAINER_NAME
+
+  ip
+
+  echo "started docker container $CONTAINER_NAME"
 }
 
 function help() {
