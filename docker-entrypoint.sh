@@ -42,11 +42,8 @@ if [ -z "$(ls -A "$PGDATA")" ]; then
 
   if [ "$GITLAB_DB_USER" ]; then
     gitlabSql="CREATE ROLE $GITLAB_DB_USER WITH LOGIN CREATEDB PASSWORD '$GITLAB_DB_PASS';"
-    echo gitlabSql
     echo $gitlabSql | gosu postgres postgres --single -jE
   fi
-
-  echo "GITLAB_DB_NAME: $GITLAB_DB_NAME"
 
   if [ "$GITLAB_DB_NAME" ]; then
     createGitlabSql="CREATE DATABASE $GITLAB_DB_NAME;"
@@ -55,7 +52,6 @@ if [ -z "$(ls -A "$PGDATA")" ]; then
     echo $fixGitlabPermissions | gosu postgres postgres --single -jE
   fi
 
-  echo
 
   if [ "REDMINE_DB_USER" ]; then
     redmineSql="CREATE ROLE $REDMINE_DB_USER WITH LOGIN CREATEDB PASSWORD '$REDMINE_DB_PASS';"
@@ -110,7 +106,6 @@ else
     redmineSql="ALTER USER $REDMINE_DB_USER WITH LOGIN CREATEDB PASSWORD '$REDMINE_DB_PASS';"
     echo $redmineSql | gosu postgres postgres --single -jE
   fi
-
 fi
 
 if [ "$GITLAB_DB_NAME" ]; then
