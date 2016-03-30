@@ -35,7 +35,7 @@ function run() {
     --env "REDMINE_DB_USER=$REDMINE_DB_USER" \
     --env "REDMINE_DB_PASS=$REDMINE_DB_PASS" \
     --env "REDMINE_DB_NAME=$REDMINE_DB_NAME" \
-    --volume $PWD/data:/home/data/postgresql \
+    --volume $DATA_DIR/postgres/data:/home/data/postgresql \
     --publish $HOST_PORT:$CONTAINER_PORT \
     $CONTAINER_NAME
 
