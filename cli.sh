@@ -6,19 +6,21 @@ source ../../bin/tasks.sh
 echo "container: $CONTAINER_NAME"
 
 function build {
-  echo "build postgres database $CONTAINER_NAME"
+  echo-start "build"
+
   docker build \
   --tag=$CONTAINER_NAME \
   --build-arg="PORT=$CONTAINER_PORT" \
   --build-arg="PGDATA=$PGDATA" \
   . # dot!
-  echo "build done"
+
+  echo-finished "build"
 }
 
 function run() {
   remove
 
-  echo "starting container $CONTAINER_NAME"
+  echo-start "run"
 
   docker run \
     --detach \
@@ -41,7 +43,7 @@ function run() {
 
   ip
 
-  echo "started docker container $CONTAINER_NAME"
+  echo-finished "run"
 }
 
 function help() {
