@@ -1,4 +1,4 @@
-# wizardsatwork/grundstein/postgres dockerfile
+# grundstein/postgres dockerfile
 # VERSION 0.0.1
 
 FROM alpine:3.3
