@@ -7,9 +7,8 @@ MAINTAINER Wizards & Witches <dev@wiznwit.com>
 ENV REFRESHED_AT 2016-29-03
 
 RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
-    && apk update
-
-RUN apk add curl "postgresql@edge>9.4" "postgresql-contrib@edge>9.4" \
+    && apk update \
+    && apk add curl "postgresql@edge>9.4" "postgresql-contrib@edge>9.4" \
     && mkdir /docker-entrypoint-initdb.d \
     && curl \
         -o /usr/local/bin/gosu \
