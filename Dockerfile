@@ -1,14 +1,14 @@
 # grundstein/postgres dockerfile
 # VERSION 0.0.1
 
-FROM alpine:3.3
+FROM alpine:3.4
 
 MAINTAINER Wizards & Witches <dev@wiznwit.com>
-ENV REFRESHED_AT 2016-29-03
+ENV REFRESHED_AT 2016-29-10
 
 RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
     && apk update \
-    && apk add curl "postgresql@edge>9.4" "postgresql-contrib@edge>9.4" \
+    && apk add curl "postgresql@edge>9.6" "postgresql-contrib@edge>9.6" \
     && mkdir /docker-entrypoint-initdb.d \
     && curl \
         -o /usr/local/bin/gosu \
