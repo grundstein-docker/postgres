@@ -5,7 +5,7 @@ echo "yay start building postgres data ${GILAB_USER_PASS}"
 chown -R postgres "$PGDATA"
 
 if [ -z "$(ls -A "$PGDATA")" ]; then
-  gosu postgres initdb
+  su-exec postgres initdb
   sed -ri "s/^#(listen_addresses\s*=\s*)\S+/\1'*'/" "$PGDATA"/postgresql.conf
 
   : ${SU_USER:="postgres"}
@@ -25,7 +25,7 @@ if [ -z "$(ls -A "$PGDATA")" ]; then
 
   if [ "$DB" != 'postgres' ]; then
     createSql="CREATE DATABASE $DB;"
-    echo $createSql | gosu postgres postgres --single -jE
+    echo $createSql | su-exec postgres postgres --single -jE
     echo
   fi
 
@@ -36,33 +36,33 @@ if [ -z "$(ls -A "$PGDATA")" ]; then
   fi
 
   userSql="$op USER $SU_USER WITH SUPERUSER $pass;"
-  echo $userSql | gosu postgres postgres --single -jE
+  echo $userSql | su-exec postgres postgres --single -jE
   echo
 
 
   if [ "$GITLAB_DB_USER" ]; then
     gitlabSql="CREATE ROLE $GITLAB_DB_USER WITH LOGIN CREATEDB PASSWORD '$GITLAB_DB_PASS';"
-    echo $gitlabSql | gosu postgres postgres --single -jE
+    echo $gitlabSql | su-exec postgres postgres --single -jE
   fi
 
   if [ "$GITLAB_DB_NAME" ]; then
     createGitlabSql="CREATE DATABASE $GITLAB_DB_NAME;"
-    echo $createGitlabSql | gosu postgres postgres --single -jE
+    echo $createGitlabSql | su-exec postgres postgres --single -jE
     fixGitlabPermissions="GRANT ALL PRIVILEGES ON DATABASE ${GITLAB_DB_NAME} to ${GITLAB_DB_USER};"
-    echo $fixGitlabPermissions | gosu postgres postgres --single -jE
+    echo $fixGitlabPermissions | su-exec postgres postgres --single -jE
   fi
 
 
   if [ "REDMINE_DB_USER" ]; then
     redmineSql="CREATE ROLE $REDMINE_DB_USER WITH LOGIN CREATEDB PASSWORD '$REDMINE_DB_PASS';"
-    echo $redmineSql | gosu postgres postgres --single -jE
+    echo $redmineSql | su-exec postgres postgres --single -jE
   fi
 
   if [ "$REDMINE_DB_NAME" ]; then
     createRedmineSql="CREATE DATABASE $REDMINE_DB_NAME;"
-    echo $createRedmineSql | gosu postgres postgres --single -jE
+    echo $createRedmineSql | su-exec postgres postgres --single -jE
     fixGitlabPermissions="GRANT ALL PRIVILEGES ON DATABASE ${REDMINE_DB_NAME} to ${REDMINE_DB_USER};"
-    echo $fixGitlabPermissions | gosu postgres postgres --single -jE
+    echo $fixGitlabPermissions | su-exec postgres postgres --single -jE
 
     echo
   fi
@@ -71,7 +71,7 @@ if [ -z "$(ls -A "$PGDATA")" ]; then
 
   # internal start of server in order to allow set-up using psql-client
   # does not listen on TCP/IP and waits until start finishes
-  gosu postgres pg_ctl -D "$PGDATA" \
+  su-exec postgres pg_ctl -D "$PGDATA" \
     -o "-c listen_addresses=''" \
     -w start
 
@@ -85,7 +85,7 @@ if [ -z "$(ls -A "$PGDATA")" ]; then
     echo
   done
 
-  gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
+  su-exec postgres pg_ctl -D "$PGDATA" -m fast -w stop
 
   { echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PGDATA"/pg_hba.conf
 else
@@ -93,24 +93,24 @@ else
 
 
   userSql="ALTER USER $SU_USER WITH SUPERUSER PASSWORD '$SU_PASS';"
-  echo $userSql | gosu postgres postgres --single -jE
+  echo $userSql | su-exec postgres postgres --single -jE
   echo
 
   if [ "$GITLAB_DB_USER" ]; then
     echo "alter user with password $GILAB_DB_PASS"
     gitlabSql="ALTER USER $GITLAB_DB_USER WITH LOGIN CREATEDB PASSWORD '$GITLAB_DB_PASS';"
-    echo $gitlabSql | gosu postgres postgres --single -jE
+    echo $gitlabSql | su-exec postgres postgres --single -jE
   fi
 
   if [ "REDMINE_DB_USER" ]; then
     redmineSql="ALTER USER $REDMINE_DB_USER WITH LOGIN CREATEDB PASSWORD '$REDMINE_DB_PASS';"
-    echo $redmineSql | gosu postgres postgres --single -jE
+    echo $redmineSql | su-exec postgres postgres --single -jE
   fi
 fi
 
 if [ "$GITLAB_DB_NAME" ]; then
   pgTrgmSql="CREATE EXTENSION IF NOT EXISTS pg_trgm;"
-  echo $pgTrgmSql | gosu postgres postgres --single -jE $GITLAB_DB_NAME
+  echo $pgTrgmSql | su-exec postgres postgres --single -jE $GITLAB_DB_NAME
 fi
 
-exec gosu postgres "$@"
+exec su-exec postgres "$@"
