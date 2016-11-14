@@ -1,5 +1,7 @@
 #!/bin/bash
 
+IP=172.18.0.3
+
 source ./ENV.sh
 source ../../bin/tasks.sh
 
@@ -39,9 +41,12 @@ function run() {
     --env "REDMINE_DB_NAME=$REDMINE_DB_NAME" \
     --volume $DATA_DIR/postgres/data:/home/data/postgresql \
     --publish $HOST_PORT:$CONTAINER_PORT \
+    --network user-defined \
+    --ip $IP \
     $CONTAINER_NAME
 
-  ip
+
+  ip $IP
 
   echo-finished "run"
 }
